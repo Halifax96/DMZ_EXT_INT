@@ -1,0 +1,99 @@
+services:
+  fw:
+    image: bin/fw
+    build: ./fw
+    container_name: fw
+    networks:
+      external-network:
+        ipv4_address: 10.5.0.1
+      DMZ:
+        ipv4_address: 10.5.1.1
+      internal-network:
+        ipv4_address: 10.5.2.1
+    privileged: true
+    tty: true
+  
+  external: 
+    image: bin/external 
+    build: ./external 
+    networks: 
+      external-network:
+        ipv4_address: 10.5.0.20  #ipdinámica 
+    depends_on: #Dependencias
+      - fw 
+    privileged: true 
+    tty: true        
+  dmz1: 
+    image: bin/dmz 
+    build: ./dmz/dmz1 
+    networks: 
+      DMZ: 
+        ipv4_address: 10.5.1.20 
+    depends_on: 
+      - fw 
+    privileged: true 
+    tty: true
+  
+  dmz2: 
+    image: bin/dmz 
+    build: ./dmz/dmz1 
+    networks: 
+      DMZ: 
+        ipv4_address: 10.5.1.21 
+    depends_on: 
+      - fw 
+    privileged: true 
+    tty: true
+  
+  int1: 
+    image: bin/internal 
+    build: ./internal/int12 
+    networks:
+      internal-network:
+        ipv4_address: 10.5.2.20
+    depends_on:
+      - fw 
+    privileged: true 
+    tty: true
+  
+  int2: 
+    image: bin/internal 
+    build: ./internal/int12 
+    networks:
+      internal-network:
+        ipv4_address: 10.5.2.21
+    depends_on:
+      - fw 
+    privileged: true 
+    tty: true
+
+  int3: 
+    image: bin/internal 
+    build: ./internal/int3 
+    networks:
+      internal-network:
+        ipv4_address: 10.5.2.22
+    depends_on:
+      - fw 
+    privileged: true 
+    tty: true
+
+networks: 
+  external-network: # id. de la red 
+    driver: bridge # modo desde el host 
+    ipam: 
+      config: 
+        - subnet: 10.5.0.0/24 # subred 
+          gateway: 10.5.0.254 # encaminador 
+  DMZ: 
+    driver: bridge 
+    ipam: 
+      config: 
+        - subnet: 10.5.1.0/24 
+          gateway: 10.5.1.254 
+  internal-network: 
+    driver: bridge 
+    ipam: 
+      config:
+      - subnet: 10.5.2.0/24 
+        gateway: 10.5.2.254
