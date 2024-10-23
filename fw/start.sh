@@ -12,4 +12,13 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 
+iptables -A FORWARD -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -p udp -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -p icmp -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+iptables -A FORWARD  -p tcp  -s 10.5.2.0/24 -d 10.5.0.0/24 -j ACCEPT
+iptables -A FORWARD  -p udp  -s 10.5.2.0/24 -d 10.5.0.0/24 -j ACCEPT
+iptables -A FORWARD  -p icmp -s 10.5.2.0/24 -d 10.5.0.0/24 -j ACCEPT
+iptables -t nat -A POSTROUTING -d 10.5.0.0/24 -s 10.5.2.0/24 -j SNAT --to 10.5.0.1
+
 /usr/sbin/sshd -D
